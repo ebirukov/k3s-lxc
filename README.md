@@ -44,16 +44,15 @@
 lxc profile create kubernates
 
 # Заполняем профиль конфигурацией
-lxc profile set kubernates \
-limits.cpu "2" \
-limits.memory "2GB" \
-raw.lxc "lxc.apparmor.profile = unconfined
+lxc profile set kubernates raw.lxc "lxc.apparmor.profile = unconfined
 lxc.cgroup2.devices.allow = a
 lxc.mount.entry = /lib/modules /lib/modules none bind,ro 0 0
 lxc.mount.entry = /usr/lib/modules /usr/lib/modules none bind,ro 0 0
-lxc.mount.auto = proc:rw sys:rw" \
-security.nesting "true" \
-security.privileged "true"
+lxc.mount.auto = proc:rw sys:rw"
+lxc profile set kubernates security.nesting "true"
+lxc profile set kubernates security.privileged "true"
+lxc profile set kubernates limits.cpu "2"
+lxc profile set kubernates limits.memory "2GB"
 
 # Настроим устройства для профиля
 lxc profile device add kubernates kmsg unix-char path=/dev/kmsg mode=0666
