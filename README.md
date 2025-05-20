@@ -26,7 +26,9 @@
       ipv4.address=10.0.0.1/24 \
       ipv4.nat=true \
       ipv6.address=none
-      
+
+    lxc profile device add default eth0 nic name=eth0 network=lxdbr0
+
     sudo ip route add 10.0.0.0/24 dev lxdbr0
 ```
 
