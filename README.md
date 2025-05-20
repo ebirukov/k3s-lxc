@@ -86,3 +86,11 @@ lxc profile device add kubernates tun unix-char path=/dev/net/tun mode=0666
     K3S_TOKEN=`lxc exec k3s-master -- sh -c 'cat /var/lib/rancher/k3s/server/node-token'` \
     INSTALL_K3S_EXEC='agent --kubelet-arg=--anonymous-auth=true --kubelet-arg=--client-ca-file=\"\"' sh -"
 ```
+Если при попытке запуски контейнера 
+Error: Failed instance creation: Failed creating instance record: Failed initialising instance: Invalid devices: Failed detecting root disk device: No root device could be found
+то под контейнеры, то нужно настроить сторадж
+
+```bash
+    sudo lxc storage create pool dir source=/lxd-storage
+    sudo lxc profile device add default root disk path=/ pool=pool
+```
