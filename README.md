@@ -7,7 +7,7 @@
 ```bash
     snap install lxd
 ```
-При установке настраивается сетевой мост lxdbr0 с NAT 
+При установке в lxd версии 6 настраивается сетевой мост lxdbr0 с NAT 
 
 ```bash
     lxc network list | grep lxdbr0
@@ -19,7 +19,7 @@
     ip route | grep lxdbr0
 ```
 
-Если нет, то можно вручную
+В версиях lxd младше 6, то потребуется вручную
 
 ```bash
     lxc network create lxdbr0 \
@@ -29,7 +29,14 @@
 
     lxc profile device add default eth0 nic name=eth0 network=lxdbr0
 
+  # Маршруты для lxdbr0
     sudo ip route add 10.0.0.0/24 dev lxdbr0
+    # Разрешаем весь трафик через lxdbr0
+    sudo iptables -A FORWARD -i lxdbr0 -j ACCEPT
+    sudo iptables -A FORWARD -o lxdbr0 -j ACCEPT
+    
+    # Включаем NAT для выхода в интернет
+    sudo iptables -t nat -A POSTROUTING -s 10.170.100.0/24 ! -d 10.170.100.0/24 -j MASQUERADE
 ```
 
 Если нужен доступ к lxc контейнерам с хост машины, то нужно прописать
@@ -37,6 +44,7 @@
 ```bash
     lxc network set lxdbr0 ipv4.routing=true
 ```
+
 
 # 2. Профиль lxd
 
@@ -68,13 +76,24 @@ lxc profile device add kubernates tun unix-char path=/dev/net/tun mode=0666
     sudo lxc exec k3s-master -- bash -c "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik --disable servicelb' sh -"
 ```
 
-Если при попытке запуски контейнера 
+Если при попытке запуски контейнеров
+```
 Error: Failed instance creation: Failed creating instance record: Failed initialising instance: Invalid devices: Failed detecting root disk device: No root device could be found
-то под контейнеры, то нужно настроить сторадж
+```
+то под контейнеры, нужно настроить сторадж
 
 ```bash
     sudo lxc storage create pool dir source=/lxd-storage
     sudo lxc profile device add default root disk path=/ pool=pool
+```
+
+Для доступа к контейнеру через kubectl может потребоваться проброс портов
+Можно сделать например через отдельный профиль
+
+```bash
+    sudo lxc profile create kubectl-proxy
+    sudo lxc profile device add kubectl-proxy kubectl-port proxy bind=host listen=tcp:0.0.0.0:6443 connect=tcp:127.0.0.1:6443
+    sudo lxc profile apply k3s-master kubectl-proxy kubernates default
 ```
 
 # 4. Установка воркернод
