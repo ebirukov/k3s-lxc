@@ -1,4 +1,20 @@
-# k3s-lxc
+# k3s-lxc - использования кластера lxc в качестве кластера для k3s
+
+### Преимущества 
+
+- минимальный оверхед от виртуализации, производительность близка к работе на хосте
+- [простота создания новой ноды кластер](#4-установка-воркернод)
+- минимальное потребление ресурсов
+```
+NAME          CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+k3s-master    22m          1%       1176Mi          61%         
+k3s-worker1   9m           0%       902Mi           47%         
+k3s-worker2   7m           0%       751Mi           39% 
+```
+
+### Недостатки
+
+- работает только на Linux
 
 ## 1. Установка LXD
 
@@ -114,12 +130,25 @@ Error: Failed instance creation: Failed creating instance record: Failed initial
     INSTALL_K3S_EXEC='agent --kubelet-arg=--anonymous-auth=true --kubelet-arg=--client-ca-file=\"\"' sh -"
 ```
 
-## 5. (Опционально) Кеширующий прокси для docker registry
+## 5. Настройка конфига для kubeconfig kubectl на хосте
+
+```shell
+# Копируем конфиг k3s на хост
+lxc file pull k3s-master/etc/rancher/k3s/k3s.yaml ~/.kube/config
+
+# Меняем localhost на адрес контейнера
+sed -i "s/127.0.0.1/`lxc list k3s-master --format json | jq -r '.[0].state.network.eth0.addresses[] | select(.family=="inet") | .address'`/g" ~/.kube/config
+
+# Проверяем доступ
+kubectl get nodes
+```
+
+## 6. (Опционально) Кеширующий прокси для docker registry
 
 Чтобы каждый lxc контейнер кластера заново не ходил в инет за образами, 
 можно настроить [кеширующий прокси](registry-proxy/README.md)
 
-## 6. (Опционально) Развертывание балансировщика 
+## 7. (Опционально) Развертывание балансировщика 
 
 Встроенный в k3s servicelb для доступа с хост машины не работает в lxc контейнерах.
 Для доступа к приложениям в кластере с хост машины можно развернуть metallb
