@@ -40,6 +40,10 @@ spec:
     - default-pool
 ```
 
+```shell
+  kubectl apply -f config.yaml
+```
+
 ## Детали работы MetalLB в режиме L2
 
 По сути MetalLB в этом режиме не является балансировщиком, а предоставляет высокодоступный IP адрес
