@@ -114,3 +114,7 @@ Error: Failed instance creation: Failed creating instance record: Failed initial
     INSTALL_K3S_EXEC='agent --kubelet-arg=--anonymous-auth=true --kubelet-arg=--client-ca-file=\"\"' sh -"
 ```
 
+## 5. (Опционально) Кеширующий прокси для docker registry
+
+Чтобы каждый lxc контейнер кластера заново не ходил в инет за образами, 
+можно настроить [кеширующий прокси](registry-proxy/README.md)
