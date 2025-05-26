@@ -128,7 +128,7 @@ Error: Failed instance creation: Failed creating instance record: Failed initial
     sudo lxc exec k3s-worker2 -- bash -c "curl -sfL https://get.k3s.io | \
     K3S_URL=https://`lxc list k3s-master --format json | jq -r '.[0].state.network.eth0.addresses[] | select(.family=="inet") | .address'`:6443 \
     K3S_TOKEN=`lxc exec k3s-master -- sh -c 'cat /var/lib/rancher/k3s/server/node-token'` \
-    INSTALL_K3S_EXEC='agent --kubelet-arg=--anonymous-auth=true --kubelet-arg=--client-ca-file=\"\"' sh -"
+    INSTALL_K3S_EXEC='agent' sh -"
 ```
 
 ## 5. Настройка конфига для kubeconfig kubectl на хосте
