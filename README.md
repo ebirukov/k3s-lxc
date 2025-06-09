@@ -54,7 +54,7 @@ k3s-worker2   7m           0%       751Mi           39%
     sudo iptables -A FORWARD -o lxdbr0 -j ACCEPT
     
     # Включаем NAT для выхода в интернет
-    sudo iptables -t nat -A POSTROUTING -s 10.170.100.0/24 ! -d 10.170.100.0/24 -j MASQUERADE
+    sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/24 ! -d 10.0.0.0/24 -j MASQUERADE
 ```
 
 Если нужен доступ к lxc контейнерам с хост машины, то нужно прописать
