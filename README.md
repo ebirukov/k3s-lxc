@@ -71,6 +71,7 @@ lxc profile create kubernates
 
 # Заполняем профиль конфигурацией
 lxc profile set kubernates raw.lxc "lxc.apparmor.profile = unconfined
+lxc.cap.drop =
 lxc.cgroup2.devices.allow = a
 lxc.mount.entry = /lib/modules /lib/modules none bind,ro 0 0
 lxc.mount.entry = /usr/lib/modules /usr/lib/modules none bind,ro 0 0
@@ -84,6 +85,7 @@ lxc profile set kubernates limits.memory "2GB"
 lxc profile device add kubernates kmsg unix-char path=/dev/kmsg mode=0666
 lxc profile device add kubernates kvm unix-char path=/dev/kvm mode=0666
 lxc profile device add kubernates tun unix-char path=/dev/net/tun mode=0666
+lxc profile device add kubernates bpf disk path=/sys/fs/bpf source=/sys/fs/bpf
 ```
 
 # 3. Установка мастерноды

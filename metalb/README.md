@@ -44,6 +44,13 @@ spec:
   kubectl apply -f config.yaml
 ```
 
+проверить работоспособность можно так:
+```shell
+    kubectl create deployment nginx --image=nginx
+    kubectl expose deployment nginx --port=80 --type=LoadBalancer
+    kubectl get svc nginx
+```
+
 ## Детали работы MetalLB в режиме L2
 
 По сути MetalLB в этом режиме не является балансировщиком, а предоставляет высокодоступный IP адрес
