@@ -69,22 +69,30 @@ k3s-worker2   7m           0%       751Mi           39%
 ```bash
 lxc profile create kubernates
 
-# Заполняем профиль конфигурацией
+# Заполняем профиль конфигурацией, а именно
+# отключаем все ограничения apparmor, список capabilities и устройств как у хоста
+# монтируем все модули ядра с хоста и псевдофайловые системы sys и proc
 lxc profile set kubernates raw.lxc "lxc.apparmor.profile = unconfined
 lxc.cap.drop =
 lxc.cgroup2.devices.allow = a
 lxc.mount.entry = /lib/modules /lib/modules none bind,ro 0 0
 lxc.mount.entry = /usr/lib/modules /usr/lib/modules none bind,ro 0 0
 lxc.mount.auto = proc:rw sys:rw"
+# разрешает запуск вложенных контейнеров
 lxc profile set kubernates security.nesting "true"
+# разрешает привилегированный доступ как у хоста
 lxc profile set kubernates security.privileged "true"
 lxc profile set kubernates limits.cpu "2"
 lxc profile set kubernates limits.memory "2GB"
 
 # Настроим устройства для профиля
+# чтения системного журнала ядра в контейнере
 lxc profile device add kubernates kmsg unix-char path=/dev/kmsg mode=0666
+# аппаратная виртуализация в контейнере
 lxc profile device add kubernates kvm unix-char path=/dev/kvm mode=0666
+# доступ из контейнера к виртуальным сетевым устройствам типа TUN (для cni плагинов)
 lxc profile device add kubernates tun unix-char path=/dev/net/tun mode=0666
+# доступ из контейнера к псевдофайловой системе для работы с bpf
 lxc profile device add kubernates bpf disk path=/sys/fs/bpf source=/sys/fs/bpf
 ```
 
