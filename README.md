@@ -121,7 +121,7 @@ Error: Failed instance creation: Failed creating instance record: Failed initial
 ```bash
     sudo lxc profile create kubectl-proxy
     sudo lxc profile device add kubectl-proxy kubectl-port proxy bind=host listen=tcp:0.0.0.0:6443 connect=tcp:127.0.0.1:6443
-    sudo lxc profile apply k3s-master kubectl-proxy kubernates default
+    sudo lxc profile assign k3s-master kubectl-proxy,kubernates,default
 ```
 
 # 4. Установка воркернод
