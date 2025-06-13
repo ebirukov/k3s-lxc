@@ -63,6 +63,12 @@ k3s-worker2   7m           0%       751Mi           39%
     lxc network set lxdbr0 ipv4.routing=true
 ```
 
+Или доступ lxc контейнерам с хост машины, по dns [container_name].lxd
+
+```bash
+    lxc network set lxdbr0 dns.mode=managed
+    lxc network set lxdbr0 dns.domain=lxd
+```
 
 # 2. Профиль lxd
 

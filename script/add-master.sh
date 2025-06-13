@@ -65,7 +65,7 @@ sudo lxc exec "$NODE_NAME" -- bash -c '
   tee /etc/rancher/k3s/registries.yaml
 ' <<EOF
 mirrors:
-  "docker.io":
+  "*":
     endpoint:
       - "http://$REGISTRY_IP:$REGISTRY_PORT"
 configs:
