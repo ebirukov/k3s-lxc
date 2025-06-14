@@ -1,0 +1,36 @@
+  :5000 {
+    log
+
+    @dockerhub expression `{http.request.uri.query}.contains("ns=docker.io")`
+    handle @dockerhub {
+        # направляем в контейнер с реджистри для docker.io
+        reverse_proxy http://localhost:5001 {
+            header_up Host localhost
+        }
+    }
+
+    @quay expression `{http.request.uri.query}.contains("ns=quay.io")`
+    handle @quay {
+        # направляем в контейнер с реджистри для quay.io
+        reverse_proxy http://localhost:5002 {
+            header_up Host localhost
+        }
+    }
+
+    # @localcatalog path /v2/_catalog
+    # handle @localcatalog {
+        # Можно сделать чтобы каталоги брались из docker.io или quay.io, например по ns, либо дефолт
+        # Здесь просто направим на docker.io локальный прокси
+        # reverse_proxy http://localhost:5001
+    # }
+
+    @default path_regexp ^/v2/.*
+    handle @default {
+        # По умолчанию проксируем в docker.io локальный прокси
+        reverse_proxy http://localhost:5001
+    }
+
+    handle {
+        respond "Not Found" 404
+    }
+  }

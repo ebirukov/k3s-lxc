@@ -42,3 +42,21 @@ EOF'
     sudo lxc exec k3s-worker1 -- sh -c "sudo mkdir -p /etc/rancher/k3s && echo 'mirrors:\n  \"docker.io\":\n    endpoint:\n      - \"http://`lxc list docker-registry --format json | jq -r '.[0].state.network.eth0.addresses[] | select(.family=="inet") | .address'`:5000\"\nconfigs:\n  \"`lxc list docker-registry --format json | jq -r '.[0].state.network.eth0.addresses[] | select(.family=="inet") | .address'`:5000\":\n    tls:\n      insecure_skip_verify: true' | sudo tee /etc/rancher/k3s/registries.yaml"
     ...
 ```
+
+## 4. Прокси для нескольких репозиториев
+
+docker registry умеет проксировать только один репозиторий, 
+если нужно проксировать несколько,
+то потребуется поднять фасадный прокси (с возможностью L7 балансировки) для маршрутизации запросов в разные прокси репозитории.
+
+Пример конфига для двух репозиториев [caddy](reg_proxy.Caddyfile)
+
+Контейнер с caddy
+```shell
+docker run -d --name caddy-proxy --restart=always \
+    -v $(pwd)/reg_proxy.Caddyfile:/etc/caddy/Caddyfile:ro \
+    --net=host \
+    caddy:2
+```
+
+Для его работу нужно поднять 2 прокси репозитория для контейнеров на портах 5001 и 5002 
