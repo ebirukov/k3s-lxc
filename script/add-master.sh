@@ -55,7 +55,7 @@ sudo lxc exec -t "$NODE_NAME" -- bash -c "curl -sfL $INSTALL_SCRIPT_URL | \
     INSTALL_K3S_EXEC='$INSTALL_K3S_EXEC' sh -"
 
 REGISTRY_IP=$(sudo lxc list docker-registry --project default --format json | jq -r '.[0].state.network.eth0.addresses[] | select(.family=="inet") | .address')
-REGISTRY_PORT="5000"
+REGISTRY_PORT=${REGISTRY_PORT:-"5000"}
 REGISTRY_URL="http://${REGISTRY_IP}:${REGISTRY_PORT}"
 
 echo "Настраиваем кеширующий репозиторий образов по адресу http://${REGISTRY_IP}:${REGISTRY_PORT}"
@@ -73,3 +73,5 @@ configs:
     tls:
       insecure_skip_verify: true
 EOF
+
+sudo lxc exec -t "$NODE_NAME" -- systemctl restart k3s

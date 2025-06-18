@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# deps: apt install yq && apt install jq
+# deps: pip install yq && apt install jq
 # usage: PROJECT_NAME=k3s-cilium MASTER_NODE_NAME=k3s-master KUBE_CONTEXT_NAME=k3s-cilium ./add-kubecfg.sh
 set -euo pipefail
 

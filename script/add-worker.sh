@@ -36,6 +36,13 @@ done
 
 echo "Установка k3s из $DISTR_URL версии ""$INSTALL_K3S_VERSION"" (master $K3S_URL)"
 
+echo lxc exec -t "$NODE_NAME" -- bash -c "curl -sfL $INSTALL_SCRIPT_URL | \
+         K3S_URL=$K3S_URL \
+         K3S_TOKEN=$K3S_TOKEN \
+         INSTALL_K3S_VERSION=$INSTALL_K3S_VERSION \
+         GITHUB_URL=$DISTR_URL \
+         INSTALL_K3S_EXEC='agent' sh -"
+
 sudo lxc exec -t "$NODE_NAME" -- bash -c "curl -sfL $INSTALL_SCRIPT_URL | \
     K3S_URL=$K3S_URL \
     K3S_TOKEN=$K3S_TOKEN \

@@ -43,6 +43,8 @@ k3s-worker2   7m           0%       751Mi           39%
     lxc network create lxdbr0 \
       ipv4.address=10.0.0.1/24 \
       ipv4.nat=true \
+      ipv4.dhcp=true \
+      ipv4.routing=true \
       ipv6.address=none
 
     lxc profile device add default eth0 nic name=eth0 network=lxdbr0
@@ -57,13 +59,7 @@ k3s-worker2   7m           0%       751Mi           39%
     sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/24 ! -d 10.0.0.0/24 -j MASQUERADE
 ```
 
-Если нужен доступ к lxc контейнерам с хост машины, то нужно прописать
-
-```bash
-    lxc network set lxdbr0 ipv4.routing=true
-```
-
-Или доступ lxc контейнерам с хост машины, по dns [container_name].lxd
+Опционально, если хочется доступ к lxc контейнерам с хост машины, по dns [container_name].lxd
 
 ```bash
     lxc network set lxdbr0 dns.mode=managed
